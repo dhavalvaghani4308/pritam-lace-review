@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pritam Lace – Review Likho</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f1b2d;
+    --navy2: #162236;
+    --gold: #c9a84c;
+    --gold-light: #e8c96a;
+    --gold-dim: rgba(201,168,76,0.15);
+    --white: #f5f0e8;
+    --gray: #8a95a3;
+    --card-bg: #1a2a3f;
+    --card-border: rgba(201,168,76,0.2);
+    --green: #2ecc71;
+    --radius: 14px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 20% 20%, rgba(201,168,76,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 80%, rgba(201,168,76,0.04) 0%, transparent 50%);
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    padding: 40px 20px 24px;
+    border-bottom: 1px solid var(--card-border);
+    background: linear-gradient(180deg, rgba(201,168,76,0.08) 0%, transparent 100%);
+  }
+  .logo-badge {
+    display: inline-block;
+    background: var(--gold-dim);
+    border: 1px solid var(--card-border);
+    border-radius: 50px;
+    padding: 6px 18px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 6vw, 32px);
+    color: var(--white);
+    line-height: 1.2;
+  }
+  .header h1 span { color: var(--gold); }
+  .header p {
+    margin-top: 10px;
+    color: var(--gray);
+    font-size: 14px;
+    font-weight: 300;
+  }
+
+  /* STEPS BAR */
+  .steps-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px 20px 0;
+    font-size: 12px;
+    color: var(--gray);
+  }
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.3s;
+  }
+  .step.active { color: var(--gold); }
+  .step.done { color: var(--green); }
+  .step-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .step.done .step-num { background: var(--green); border-color: var(--green); color: #fff; }
+  .step-divider { width: 24px; height: 1px; background: var(--card-border); }
+
+  /* SCREENS */
+  .screen { display: none; padding: 24px 16px 80px; max-width: 600px; margin: 0 auto; }
+  .screen.active { display: block; }
+
+  /* SCREEN 1 – CATEGORIES */
+  .screen-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+  .screen-sub {
+    font-size: 13px;
+    color: var(--gray);
+    margin-bottom: 20px;
+    font-weight: 300;
+  }
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .cat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 18px 14px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .cat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .cat-card:hover, .cat-card:active {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  .cat-card:hover::before { opacity: 1; }
+  .cat-icon { font-size: 26px; margin-bottom: 10px; display: block; }
+  .cat-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.3;
+  }
+  .cat-hint {
+    font-size: 11px;
+    color: var(--gray);
+    margin-top: 4px;
+    font-weight: 300;
+  }
+
+  /* SCREEN 2 – REVIEWS */
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--gold);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-bottom: 20px;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+  .back-btn:hover { opacity: 0.8; }
+
+  .selected-cat-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--gold-dim);
+    border: 1px solid var(--card-border);
+    border-radius: 50px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: var(--gold);
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+
+  .review-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  .review-card:hover, .review-card:active {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.06);
+  }
+  .review-card.selected {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.1);
+  }
+  .review-card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 14px; right: 14px;
+    width: 22px; height: 22px;
+    background: var(--gold);
+    color: var(--navy);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .review-num {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .review-text {
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--white);
+    font-weight: 300;
+  }
+  .stars {
+    color: #f4c542;
+    font-size: 13px;
+    margin-top: 8px;
+    letter-spacing: 1px;
+  }
+
+  /* SCREEN 3 – ACTION */
+  .action-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .action-review-text {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--white);
+    font-weight: 300;
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 16px;
+    border-left: 3px solid var(--gold);
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: var(--navy);
+    border: none;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+    margin-bottom: 12px;
+    letter-spacing: 0.3px;
+  }
+  .btn-primary:active { transform: scale(0.98); }
+
+  .btn-secondary {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    color: var(--gold);
+    border: 1.5px solid var(--card-border);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+    margin-bottom: 12px;
+  }
+  .btn-secondary:hover { border-color: var(--gold); background: var(--gold-dim); }
+
+  .instruction-box {
+    background: rgba(46,204,113,0.08);
+    border: 1px solid rgba(46,204,113,0.25);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .instruction-box .inst-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .instruction-step {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+  .inst-num {
+    width: 20px; height: 20px;
+    background: var(--green);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .inst-text { font-size: 13px; color: var(--white); font-weight: 300; line-height: 1.5; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--green);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 999;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* FOOTER NOTE */
+  .footer-note {
+    text-align: center;
+    font-size: 11px;
+    color: var(--gray);
+    padding: 16px;
+    border-top: 1px solid var(--card-border);
+    font-weight: 300;
+  }
+  .footer-note strong { color: var(--gold); font-weight: 600; }
+
+  @media (max-width: 360px) {
+    .category-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo-badge">⭐ Pritam Lace – Google Review</div>
+  <h1>Apna Experience<br><span>Share Karein</span></h1>
+  <p>Sirf 3 step mein apni review ready ho jaayegi</p>
+</div>
+
+<!-- STEPS -->
+<div class="steps-bar">
+  <div class="step active" id="step1">
+    <div class="step-num">1</div>
+    <span>Category</span>
+  </div>
+  <div class="step-divider"></div>
+  <div class="step" id="step2">
+    <div class="step-num">2</div>
+    <span>Review</span>
+  </div>
+  <div class="step-divider"></div>
+  <div class="step" id="step3">
+    <div class="step-num">3</div>
+    <span>Post Karo</span>
+  </div>
+</div>
+
+<!-- ===== SCREEN 1: CATEGORY ===== -->
+<div class="screen active" id="screen-cat">
+  <p class="screen-title" style="margin-top:20px">Aapne humse kya liya?</p>
+  <p class="screen-sub">Jo aapke experience se match kare woh category chunein</p>
+
+  <div class="category-grid">
+    <div class="cat-card" onclick="selectCategory(0)">
+      <span class="cat-icon">🧵</span>
+      <div class="cat-name">Lace Variety & Collection</div>
+      <div class="cat-hint">GPO, Crochet, Jalar, Cotton</div>
+    </div>
+    <div class="cat-card" onclick="selectCategory(1)">
+      <span class="cat-icon">🥻</span>
+      <div class="cat-name">Saree & Pallu Lace</div>
+      <div class="cat-hint">Saree border, jalar, pallu</div>
+    </div>
+    <div class="cat-card" onclick="selectCategory(2)">
+      <span class="cat-icon">👗</span>
+      <div class="cat-name">Kurti, Dupatta & Garment</div>
+      <div class="cat-hint">Stitching unit, garment use</div>
+    </div>
+    <div class="cat-card" onclick="selectCategory(3)">
+      <span class="cat-icon">📦</span>
+      <div class="cat-name">Bulk Supply & Low MOQ</div>
+      <div class="cat-hint">Large orders, bulk buying</div>
+    </div>
+    <div class="cat-card" onclick="selectCategory(4)">
+      <span class="cat-icon">✂️</span>
+      <div class="cat-name">Custom Design</div>
+      <div class="cat-hint">Customize creation, special order</div>
+    </div>
+    <div class="cat-card" onclick="selectCategory(5)">
+      <span class="cat-icon">💰</span>
+      <div class="cat-name">Pricing & Value</div>
+      <div class="cat-hint">Competitive wholesale rate</div>
+    </div>
+    <div class="cat-card" onclick="selectCategory(6)">
+      <span class="cat-icon">🤝</span>
+      <div class="cat-name">Service & Guidance</div>
+      <div class="cat-hint">Staff help, support</div>
+    </div>
+    <div class="cat-card" onclick="selectCategory(7)">
+      <span class="cat-icon">🏅</span>
+      <div class="cat-name">Experience & Trust</div>
+      <div class="cat-hint">2009 se established</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCREEN 2: REVIEWS ===== -->
+<div class="screen" id="screen-reviews">
+  <button class="back-btn" onclick="goBack(1)">← Wapas Jaao</button>
+  <div class="selected-cat-tag" id="selected-cat-label">🧵 Category</div>
+  <p class="screen-title">Apni review chunein</p>
+  <p class="screen-sub">Jo aapke experience se sabse zyada match kare</p>
+  <div id="reviews-list"></div>
+</div>
+
+<!-- ===== SCREEN 3: ACTION ===== -->
+<div class="screen" id="screen-action">
+  <button class="back-btn" onclick="goBack(2)">← Doosri Review Chunein</button>
+
+  <div class="instruction-box">
+    <div class="inst-title">📋 3 Easy Steps</div>
+    <div class="instruction-step">
+      <div class="inst-num">1</div>
+      <div class="inst-text"><strong>"Copy Karo"</strong> button dabao — review copy ho jaayegi</div>
+    </div>
+    <div class="instruction-step">
+      <div class="inst-num">2</div>
+      <div class="inst-text"><strong>"Google Review Karo"</strong> dabao — Google ka page khulega</div>
+    </div>
+    <div class="instruction-step">
+      <div class="inst-num">3</div>
+      <div class="inst-text">Google page mein box mein <strong>Paste (Ctrl+V)</strong> karo aur Post karo ⭐</div>
+    </div>
+  </div>
+
+  <div class="action-card">
+    <div class="review-num">Aapki Review</div>
+    <div class="action-review-text" id="final-review-text">—</div>
+    <div class="stars">★★★★★</div>
+  </div>
+
+  <button class="btn-primary" onclick="copyReview()">
+    📋 Copy Karo
+  </button>
+  <button class="btn-secondary" onclick="openGoogle()">
+    🌐 Google Review Karo
+  </button>
+  <button class="btn-secondary" onclick="copyAndOpen()">
+    ✨ Copy + Google — Ek Saath
+  </button>
+</div>
+
+<!-- FOOTER -->
+<div class="footer-note">
+  <strong>Pritam Lace</strong> · Punagam, Surat · Est. 2009<br>
+  Aapka review hamare business ke liye bahut important hai 🙏
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✓ Review copy ho gayi!</div>
+
+<script>
+const GOOGLE_REVIEW_URL = "https://g.page/r/CY3oKW2AiIeiEAE/review";
+
+const categories = [
+  { name: "Lace Variety & Collection", icon: "🧵" },
+  { name: "Saree & Pallu Lace", icon: "🥻" },
+  { name: "Kurti, Dupatta & Garment", icon: "👗" },
+  { name: "Bulk Supply & Low MOQ", icon: "📦" },
+  { name: "Custom Design", icon: "✂️" },
+  { name: "Pricing & Value", icon: "💰" },
+  { name: "Service & Guidance", icon: "🤝" },
+  { name: "Experience & Trust", icon: "🏅" }
+];
+
+const reviews = [
+  // 0 - Lace Variety
+  [
+    "Pritam Lace ka collection dekh ke main hairan reh gaya. GPO lace, crochet lace, cotton lace, jalar lace — itni variety ek jagah milna mushkil hai Surat mein. Wholesale lace supplier ke roop mein ye sabse best hain.",
+    "Bahut hi badia collection hai Pritam Lace ka. Fancy jalar lace se lekar GPO lace tak, sab kuch ek hi jagah milta hai. Bulk lace wholesaler Surat mein inka koi muqabala nahi.",
+    "Main Surat mein kai wholesale lace suppliers ke paas gaya, lekin Pritam Lace jaisi variety kahin nahi mili. Crochet lace, cotton lace, GPO lace — har type available hai aur quality bhi top class.",
+    "Hamari saree manufacturing unit ke liye hum Pritam Lace se hi lace khareedte hain. Unka collection har season update hota hai. Fancy jalar lace ki quality ekdum outstanding hai.",
+    "Surat mein best lace wholesaler ki baat karo toh Pritam Lace ka naam sabse pehle aata hai. GPO lace aur crochet lace ki itni variety kisi aur ke paas nahi hai market mein.",
+    "Bulk lace supplier dhundh rahe the Gujarat mein — Pritam Lace mil gaye. Inka jalar lace collection ekdum unique hai. Har design fresh aur market trend ke hisaab se update rehta hai.",
+    "Cotton lace aur GPO lace bulk mein chahiye tha apni garment unit ke liye. Pritam Lace ne perfect solution diya — ek hi visit mein sab ho gaya. Wholesale lace Surat mein best experience.",
+    "Saree, kurti, dupatta — sab ke liye alag alag lace chahiye thi. Pritam Lace ke paas itna bada collection hai ki ek hi jagah sab mil gaya. Fancy jalar lace ki quality outstanding hai."
+  ],
+  // 1 - Saree & Pallu
+  [
+    "Hamare saree manufacturing business ke liye saree pallu lace Pritam Lace se hi aata hai. Unki quality consistent rehti hai aur design bhi market ke hisaab se update hote rehte hain. Best saree lace supplier Surat mein.",
+    "Saree border lace ke liye Pritam Lace ek number hai. GPO lace aur jalar lace ka collection itna bada hai ki buyer ko aur kahin jaana hi nahi padta. Wholesale saree lace Surat mein best.",
+    "Hamare customers ko saree mein jalar lace bahut pasand aata hai. Pritam Lace ka jalar collection sabse different hai market mein. Saree pallu lace supplier ke roop mein inse better koi nahi mila humein.",
+    "Saree creation ke liye lace bahut important element hai. Pritam Lace samajhta hai kya chahiye saree manufacturers ko. Unka pallu lace aur saree border collection ekdum unique hai.",
+    "Main saree manufacturer hoon Surat se. Mujhe consistent quality aur timely supply chahiye. Pritam Lace ne kabhi disappoint nahi kiya. Saree lace wholesale ke liye ye mera permanent supplier hai.",
+    "Jalar lace aur saree pallu lace ke liye Pritam Lace sabse reliable source hai mere liye. 2009 se kaam kar rahe hain — unka experience unke product selection mein clearly dikhta hai.",
+    "Saree designers ke liye Pritam Lace ek complete solution hai. GPO lace, jalar lace, saree border — sab ek jagah. Wholesale saree lace Surat mein inka collection sabse wide hai.",
+    "Hamare saree pallu ke liye specific design chahiye thi. Pritam Lace ne existing collection mein se perfect match dhundha. Unki product knowledge aur guidance bahut helpful rahi."
+  ],
+  // 2 - Garment
+  [
+    "Kurti aur dupatta ke liye lace kharidni thi bulk mein. Pritam Lace ke paas garment use ke liye perfect variety hai. Cotton lace aur fancy lace dono available — wholesale price mein quality top class.",
+    "Humari garment stitching unit ke liye Pritam Lace main supplier hai. Kurti lace material, dupatta lace, saree border — sab ek hi jagah milta hai. Garment trimming supplier Surat mein inka koi jawaab nahi.",
+    "Kurti manufacturers ke liye Pritam Lace best choice hai. Unka cotton lace collection garment use ke liye ekdum perfect hai. Bulk mein lene par price bhi reasonable aur quality consistent rehti hai.",
+    "Dupatta lace wholesale ke liye Surat mein Pritam Lace sabse reliable hai. Design variety itni hai ki buyer confuse ho jaye. Garment trimming supplier ke roop mein 15+ saal se trusted hain.",
+    "Hamare dress manufacturing unit mein value-addition ke liye lace use hoti hai. Pritam Lace ki crochet lace aur cotton lace quality ekdum alag hai market mein. Bulk supplier Surat mein best experience.",
+    "Kurti, lehenga, dupatta — sab ke liye alag requirements hain. Pritam Lace ne har requirement ke liye sahi solution diya. Garment lace supplier ke roop mein inpe full trust hai mujhe.",
+    "Stitching unit ke liye MOQ bahut important factor tha. Pritam Lace ne low MOQ mein bhi quality maintain ki. Dupatta lace aur kurti lace wholesale mein best deal mili yahan.",
+    "Cotton lace bulk mein chahiye thi apni garment unit ke liye. Pritam Lace ka cotton lace collection itna wide hai ki choice karna mushkil ho gaya. Quality aur price dono mein best in Surat."
+  ],
+  // 3 - Bulk
+  [
+    "Bulk lace order ke liye Pritam Lace sabse reliable supplier hai Surat mein. Low MOQ accept karte hain — small manufacturers ke liye ye bahut important hai. Consistent supply aur quality har order mein maintain hoti hai.",
+    "Wholesale lace supplier dhundh rahe the jo small orders bhi accept kare. Pritam Lace ne low MOQ mein bhi full attention di. Gujarat mein bulk lace supplier ke roop mein inse better koi nahi.",
+    "Hamare large stitching unit ke liye regular bulk order chahiye. Pritam Lace ka supply chain reliable hai — kabhi delay nahi hua. Bulk lace wholesaler Surat mein best experience raha consistently.",
+    "Low MOQ lace supplier ki zaroorat thi startup garment unit ke liye. Pritam Lace ne accommodate kiya aur quality bhi compromise nahi ki. Surat mein best wholesale lace supplier ye hain.",
+    "Bulk mein GPO lace aur cotton lace order kiya tha. Pritam Lace ne timely deliver kiya aur packaging bhi perfect thi. Wholesale lace Gujarat mein inka service level top class hai.",
+    "Pehli baar bulk order kiya tha Pritam Lace se — thoda hesitation tha. Lekin quality aur service ne full confidence de diya. Ab regular supplier ban gaye hain mere liye. Bulk lace Surat mein best.",
+    "Large garment manufacturing unit ke liye consistent lace supply chahiye. Pritam Lace ne kabhi bhi stock out jaisi situation nahi aane di. Reliable bulk lace supplier Surat mein ye hi hain.",
+    "Low MOQ ke saath test order kiya tha pehle. Quality itni achi thi ki ab bulk mein order karta hoon regularly. Wholesale lace supplier Surat mein Pritam Lace mera first choice hai."
+  ],
+  // 4 - Custom
+  [
+    "Custom lace design banwana tha apni saree collection ke liye. Pritam Lace ne poora process samjhaya aur requirement ke hisaab se design taiyar kiya. Custom lace manufacturer Surat mein ye best hain.",
+    "Hamare exclusive garment line ke liye customize lace chahiye thi. Pritam Lace ki team ne design process mein bahut help ki. Custom lace design Surat mein inka experience kaafi valuable raha.",
+    "Specific color aur design mein lace banwani thi. Pritam Lace ne exact requirement samjha aur deliver kiya. Custom lace supplier ke roop mein inki expertise outstanding hai.",
+    "Seasonal collection ke liye naye designs chahiye the. Pritam Lace ke paas market trends ki achhi samajh hai. Custom lace design Gujarat mein inka kaam ekdum professional hai.",
+    "Custom cotton lace order kiya tha specific measurement mein. Pritam Lace ne no compromise approach rakha quality pe. Custom lace manufacturer India mein inka service level top hai.",
+    "Bridal saree collection ke liye exclusive jalar lace design chahiye thi. Pritam Lace ne unique design provide kiya jo market mein aur kisi ke paas nahi tha. Custom lace creation Surat mein best.",
+    "Garment line ke liye customize lace ki zaroorat thi alag alag sizes mein. Pritam Lace ne sab handle kiya efficiently. Custom lace design Surat mein inki reputation fully deserved hai.",
+    "Apne brand ke liye exclusive lace design banwana tha. Pritam Lace ka customization process smooth tha aur result exactly as expected. Best custom lace supplier Gujarat mein ye hain."
+  ],
+  // 5 - Pricing
+  [
+    "Surat mein kai wholesale lace suppliers se quote liya tha. Pritam Lace ka pricing sabse competitive tha aur quality bhi best. Wholesale lace price India mein inka value for money unbeatable hai.",
+    "Bulk mein lace kharidne ka price comparison kiya tha. Pritam Lace ne sabse better deal di bina quality compromise kiye. Wholesale lace supplier Surat mein best price ye hi dete hain.",
+    "Price aur quality ka balance Pritam Lace ke paas sahi hai. Market mein cheap lace milti hai lekin quality nahi hoti. Ye dono consistently maintain karte hain. Best value wholesale lace Surat.",
+    "Garment manufacturing cost control ke liye lace ki pricing important hai. Pritam Lace competitive price pe quality product deta hai. Wholesale lace Gujarat mein inse better deal nahi milti.",
+    "Low MOQ pe bhi reasonable pricing deta hai Pritam Lace. Chhote orders mein bhi price fair hota hai. Wholesale lace supplier Surat mein pricing transparency inki specialty hai.",
+    "First order ke baad price aur quality dono se satisfied tha. Ab regular customer hoon. Bulk lace wholesale price Surat mein Pritam Lace sabse honest deal deta hai.",
+    "Price negotiate karna easy tha Pritam Lace ke saath. Transparent pricing aur no hidden charges. Wholesale lace supplier Gujarat mein inki pricing policy sabse fair hai.",
+    "Quality lace at wholesale price — Pritam Lace deliver karta hai ye promise. Surat mein kai suppliers hain lekin price-to-quality ratio mein ye sabse aage hain. Best bulk lace price India."
+  ],
+  // 6 - Service
+  [
+    "Pehli baar lace wholesale kharid raha tha — bahut confused tha. Pritam Lace ki team ne poora guide kiya kaunsi lace kahan use hogi. Service aur guidance ke liye Surat mein best wholesale supplier hain ye.",
+    "Staff bahut knowledgeable hai Pritam Lace ka. Kaunsa lace kaunse garment ke liye suitable hai — sab batate hain patiently. Lace supplier Surat mein inka customer service outstanding hai.",
+    "Order process smooth tha aur queries ka jawab turant mila. Pritam Lace ka service attitude genuinely helpful hai. Wholesale lace supplier Gujarat mein inki service level best hai.",
+    "Hamare specific requirement ke liye best lace suggest ki team ne. Unnecessary products push nahi kiye. Honest guidance diya. Lace wholesaler Surat mein inka approach ekdum professional hai.",
+    "After-sales support bhi achha hai Pritam Lace ka. Delivery ke baad bhi queries handle karte hain properly. Wholesale lace supplier India mein inka service commitment impressive hai.",
+    "Naye designs aur trends ke baare mein regularly update karte hain. Market knowledge share karte hain customers ke saath. Lace supplier Surat mein inka value-add approach alag hai.",
+    "Large order ke coordination mein koi problem nahi aayi. Team responsive thi throughout the process. Bulk lace supplier Surat mein Pritam Lace ka service level reliable hai consistently.",
+    "WhatsApp pe bhi available rehte hain queries ke liye. Quick response time aur helpful attitude. Wholesale lace supplier Gujarat mein inki accessibility aur service dono top notch hain."
+  ],
+  // 7 - Experience
+  [
+    "2009 se kaam kar rahe hain Pritam Lace — 15+ saal ka experience unki product knowledge mein clearly dikhta hai. Trusted lace supplier since 2009, Surat mein inki reliability kai companies ke liye proven hai.",
+    "Reliable lace supplier dhundh rahe the long-term ke liye. Pritam Lace 2009 se established hai — unka track record speaks for itself. Wholesale lace supplier Surat mein inpe trust karna easy hai.",
+    "15 saal se zyada ka experience hai Pritam Lace ko. Naye designs aur market changes ke saath update rehte hain. Trusted wholesale lace supplier India mein inki reputation solid hai.",
+    "Bahut sare suppliers try kiye — consistent quality koi nahi deta tha. Pritam Lace 2009 se same standard maintain kar raha hai. Reliable lace wholesaler Surat mein ye sabse dependable hain.",
+    "Long-term supplier relationship chahiye thi business ke liye. Pritam Lace ne 15+ saal mein ek strong reputation banayi hai. Established lace supplier Gujarat mein inpe depend karna safe hai.",
+    "Market mein naye players bahut hain, lekin experienced supplier ka fark padta hai. Pritam Lace 2009 se hai — unka experience aur network reliable delivery ensure karta hai. Best lace supplier Surat.",
+    "Seasonal rush mein bhi supply maintain ki Pritam Lace ne. Ye sirf experienced suppliers kar sakte hain. Wholesale lace supplier since 2009 — inki reliability festive season mein bhi proven hai.",
+    "Kabhi bhi quality compromise nahi ki Pritam Lace ne — 15 saal ke experience mein. Ye consistency hi inhe best trusted lace supplier Surat mein banati hai. Highly recommend for bulk orders."
+  ]
+];
+
+let selectedCat = null;
+let selectedReview = null;
+
+function setStep(n) {
+  [1,2,3].forEach(i => {
+    const el = document.getElementById('step'+i);
+    el.className = 'step';
+    if(i < n) el.classList.add('done');
+    else if(i === n) el.classList.add('active');
+  });
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function selectCategory(idx) {
+  selectedCat = idx;
+  const cat = categories[idx];
+  document.getElementById('selected-cat-label').innerHTML = cat.icon + ' ' + cat.name;
+
+  const list = document.getElementById('reviews-list');
+  list.innerHTML = '';
+  reviews[idx].forEach((text, i) => {
+    const div = document.createElement('div');
+    div.className = 'review-card';
+    div.innerHTML = `
+      <div class="review-num">Review ${i+1}</div>
+      <div class="review-text">${text}</div>
+      <div class="stars">★★★★★</div>
+    `;
+    div.onclick = () => selectReview(i, text, div);
+    list.appendChild(div);
+  });
+
+  setStep(2);
+  showScreen('screen-reviews');
+}
+
+function selectReview(idx, text, cardEl) {
+  document.querySelectorAll('.review-card').forEach(c => c.classList.remove('selected'));
+  cardEl.classList.add('selected');
+  selectedReview = text;
+
+  setTimeout(() => {
+    document.getElementById('final-review-text').textContent = text;
+    setStep(3);
+    showScreen('screen-action');
+  }, 250);
+}
+
+function goBack(to) {
+  if(to === 1) { setStep(1); showScreen('screen-cat'); }
+  if(to === 2) { setStep(2); showScreen('screen-reviews'); }
+}
+
+function copyReview() {
+  if(!selectedReview) return;
+  navigator.clipboard.writeText(selectedReview).then(() => {
+    showToast('✓ Review copy ho gayi!');
+  }).catch(() => {
+    // Fallback
+    const el = document.createElement('textarea');
+    el.value = selectedReview;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    showToast('✓ Review copy ho gayi!');
+  });
+}
+
+function openGoogle() {
+  window.open(GOOGLE_REVIEW_URL, '_blank');
+}
+
+function copyAndOpen() {
+  copyReview();
+  setTimeout(() => openGoogle(), 600);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
