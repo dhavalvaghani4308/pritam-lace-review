@@ -1,892 +1,451 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pritam Lace – Google Review Generator</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --navy: #0f1b2d;
-            --navy2: #162236;
-            --gold: #c9a84c;
-            --gold-light: #e8c96a;
-            --gold-dim: rgba(201,168,76,0.15);
-            --white: #f5f0e8;
-            --gray: #8a95a3;
-            --card-bg: #1a2a3f;
-            --card-border: rgba(201,168,76,0.2);
-            --green: #2ecc71;
-            --font-serif: 'Playfair Display', serif;
-            --font-sans: 'DM Sans', sans-serif;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--navy);
-            background-image: 
-                radial-gradient(ellipse at 20% 20%, rgba(201,168,76,0.06) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 80%, rgba(201,168,76,0.04) 0%, transparent 50%);
-            color: var(--white);
-            font-family: var(--font-sans);
-            min-height: 100vh;
-            overflow-x: hidden;
-            line-height: 1.5;
-        }
-
-        .api-banner {
-            background: var(--gold);
-            color: var(--navy);
-            font-size: 11px;
-            font-weight: 700;
-            text-align: center;
-            padding: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        header {
-            text-align: center;
-            padding: 40px 20px 24px;
-            background: linear-gradient(180deg, rgba(201,168,76,0.08) 0%, transparent 100%);
-            border-bottom: 1px solid var(--card-border);
-        }
-
-        .badge {
-            display: inline-block;
-            background: var(--gold-dim);
-            border: 1px solid var(--card-border);
-            border-radius: 50px;
-            padding: 6px 18px;
-            color: var(--gold);
-            font-size: 11px;
-            letter-spacing: 2.5px;
-            text-transform: uppercase;
-            margin-bottom: 16px;
-        }
-
-        h1 {
-            font-family: var(--font-serif);
-            font-size: clamp(22px, 6vw, 32px);
-            font-weight: 600;
-            line-height: 1.2;
-            margin-bottom: 8px;
-        }
-
-        h1 .gold-text {
-            color: var(--gold);
-        }
-
-        .subtitle {
-            color: var(--gray);
-            font-size: 14px;
-            font-weight: 300;
-        }
-
-        /* Progress Bar */
-        .progress-bar {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            gap: 12px;
-        }
-
-        .step {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--gray);
-            font-size: 12px;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .step-circle {
-            width: 22px;
-            height: 22px;
-            border: 1.5px solid currentColor;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            position: relative;
-        }
-
-        .step.active {
-            color: var(--gold);
-        }
-
-        .step.done {
-            color: var(--green);
-        }
-
-        .step.done .step-circle {
-            background: var(--green);
-            color: white;
-            border-color: var(--green);
-        }
-
-        .divider {
-            width: 24px;
-            height: 1px;
-            background: var(--card-border);
-        }
-
-        /* Container */
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 24px 16px 80px;
-        }
-
-        .screen-title {
-            font-family: var(--font-serif);
-            font-size: 18px;
-            margin-bottom: 4px;
-        }
-
-        .screen-subtitle {
-            font-size: 13px;
-            color: var(--gray);
-            font-weight: 300;
-            margin-bottom: 24px;
-        }
-
-        /* Screen 1: Grid */
-        .grid-categories {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        @media (max-width: 360px) {
-            .grid-categories {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 14px;
-            padding: 18px 14px;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, var(--gold), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .card:hover, .card.active-state {
-            border-color: var(--gold);
-            background: rgba(201,168,76,0.08);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-        }
-
-        .card:hover::before {
-            opacity: 1;
-        }
-
-        .card-emoji {
-            font-size: 26px;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .card-name {
-            font-size: 13px;
-            font-weight: 600;
-            display: block;
-        }
-
-        .card-hint {
-            font-size: 11px;
-            color: var(--gray);
-            margin-top: 4px;
-            display: block;
-        }
-
-        /* Loading Spinner */
-        .loading-overlay {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 60px 0;
-            width: 100%;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--gold-dim);
-            border-top-color: var(--gold);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: var(--gold);
-            font-size: 14px;
-            margin-top: 12px;
-            font-weight: 500;
-        }
-
-        /* Screen 2: Reviews */
-        .back-btn {
-            background: none;
-            border: none;
-            color: var(--gold);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            padding: 8px 0;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .tag-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: var(--gold-dim);
-            border: 1px solid var(--card-border);
-            border-radius: 50px;
-            padding: 4px 14px;
-            color: var(--gold);
-            font-size: 12px;
-            font-weight: 500;
-            margin-bottom: 20px;
-        }
-
-        .review-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .review-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 14px;
-            padding: 16px;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.2s ease;
-        }
-
-        .review-card:hover {
-            border-color: var(--gold);
-            background: rgba(201,168,76,0.06);
-        }
-
-        .review-card.selected {
-            border-color: var(--gold);
-            background: rgba(201,168,76,0.1);
-        }
-
-        .review-card.selected::after {
-            content: '✓';
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            width: 18px;
-            height: 18px;
-            background: var(--gold);
-            color: var(--navy);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            font-weight: 900;
-        }
-
-        .review-label {
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            color: var(--gold);
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .review-content {
-            font-size: 13.5px;
-            line-height: 1.7;
-            color: var(--white);
-            font-weight: 300;
-        }
-
-        .stars {
-            color: #f4c542;
-            font-size: 13px;
-            margin-top: 8px;
-            display: block;
-        }
-
-        /* Screen 3: Action */
-        .instruction-box {
-            background: rgba(46,204,113,0.08);
-            border: 1px solid rgba(46,204,113,0.25);
-            border-radius: 14px;
-            padding: 16px;
-            margin-bottom: 24px;
-        }
-
-        .instruction-title {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--green);
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .inst-row {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 10px;
-        }
-
-        .inst-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .circle-num {
-            width: 20px;
-            height: 20px;
-            background: var(--green);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: 700;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        .inst-text {
-            font-size: 13px;
-            color: var(--white);
-            line-height: 1.4;
-        }
-
-        .final-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 14px;
-            padding: 20px;
-            margin-bottom: 24px;
-        }
-
-        .final-label {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--gold);
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .review-box {
-            background: rgba(0,0,0,0.2);
-            border-radius: 10px;
-            padding: 14px;
-            border-left: 3px solid var(--gold);
-            font-size: 13.5px;
-            line-height: 1.6;
-            margin-bottom: 12px;
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #c9a84c, #e8c96a);
-            color: var(--navy);
-            border: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-bottom: 12px;
-            transition: transform 0.1s ease;
-        }
-
-        .btn-primary:active {
-            transform: scale(0.98);
-        }
-
-        .btn-secondary {
-            width: 100%;
-            padding: 14px;
-            background: transparent;
-            color: var(--gold);
-            border: 1.5px solid var(--card-border);
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            margin-bottom: 12px;
-            transition: all 0.2s ease;
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--gold);
-            background: var(--gold-dim);
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%) translateY(80px);
-            background: #2ecc71;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-size: 14px;
-            font-weight: 600;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-            white-space: nowrap;
-            z-index: 1000;
-            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            font-size: 11px;
-            color: var(--gray);
-            padding: 24px 16px;
-            border-top: 1px solid var(--card-border);
-        }
-
-        .footer-biz {
-            color: var(--gold);
-            font-weight: 700;
-            margin-bottom: 4px;
-            display: block;
-        }
-
-        /* Helpers */
-        .hidden { display: none !important; }
-
-        /* Mobile specific fixes */
-        @media (pointer: coarse) {
-            .btn-primary, .btn-secondary, .card, .review-card {
-                min-height: 44px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pritam Lace – Review Likho</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f1b2d;
+    --gold: #c9a84c;
+    --gold-light: #e8c96a;
+    --gold-dim: rgba(201,168,76,0.12);
+    --white: #f5f0e8;
+    --gray: #8a95a3;
+    --card-bg: #1a2a3f;
+    --card-border: rgba(201,168,76,0.2);
+    --green: #2ecc71;
+    --radius: 14px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 15% 15%, rgba(201,168,76,0.07) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 85%, rgba(201,168,76,0.04) 0%, transparent 50%);
+  }
+  .header {
+    text-align: center;
+    padding: 36px 20px 22px;
+    border-bottom: 1px solid var(--card-border);
+    background: linear-gradient(180deg, rgba(201,168,76,0.07) 0%, transparent 100%);
+  }
+  .logo-badge {
+    display: inline-block;
+    background: var(--gold-dim);
+    border: 1px solid var(--card-border);
+    border-radius: 50px;
+    padding: 5px 16px;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 12px;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 6vw, 30px);
+    color: var(--white); line-height: 1.25;
+  }
+  .header h1 span { color: var(--gold); }
+  .header p { margin-top: 8px; color: var(--gray); font-size: 13px; font-weight: 300; }
+  .steps-bar {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 18px 20px 0;
+    font-size: 12px; color: var(--gray);
+  }
+  .step { display: flex; align-items: center; gap: 6px; transition: color 0.3s; }
+  .step.active { color: var(--gold); }
+  .step.done { color: var(--green); }
+  .step-num {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 1.5px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+  }
+  .step.done .step-num { background: var(--green); border-color: var(--green); color: #fff; }
+  .step-divider { width: 24px; height: 1px; background: var(--card-border); }
+  .screen { display: none; padding: 22px 16px 80px; max-width: 600px; margin: 0 auto; }
+  .screen.active { display: block; }
+  .screen-title { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--white); margin-bottom: 5px; }
+  .screen-sub { font-size: 13px; color: var(--gray); margin-bottom: 18px; font-weight: 300; }
+  .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+  .cat-card {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: var(--radius); padding: 16px 13px;
+    cursor: pointer; transition: all 0.22s ease;
+    position: relative; overflow: hidden;
+  }
+  .cat-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 2px; background: linear-gradient(90deg, var(--gold), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .cat-card:hover { border-color: var(--gold); background: rgba(201,168,76,0.07); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.25); }
+  .cat-card:hover::before { opacity: 1; }
+  .cat-icon { font-size: 24px; margin-bottom: 9px; display: block; }
+  .cat-name { font-size: 13px; font-weight: 600; color: var(--white); line-height: 1.3; }
+  .cat-hint { font-size: 11px; color: var(--gray); margin-top: 3px; font-weight: 300; }
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--gold); font-size: 13px; font-weight: 500;
+    cursor: pointer; margin-bottom: 18px;
+    background: none; border: none; padding: 0;
+  }
+  .selected-cat-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--gold-dim); border: 1px solid var(--card-border);
+    border-radius: 50px; padding: 5px 13px;
+    font-size: 12px; color: var(--gold); font-weight: 500; margin-bottom: 14px;
+  }
+  .loading-box {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 40px 20px; gap: 14px;
+  }
+  .spinner {
+    width: 34px; height: 34px;
+    border: 3px solid var(--card-border);
+    border-top-color: var(--gold);
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { color: var(--gray); font-size: 13px; font-weight: 300; }
+  .shimmer-card {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: var(--radius); padding: 16px; margin-bottom: 11px;
+  }
+  .shimmer-line {
+    height: 11px; border-radius: 6px;
+    background: linear-gradient(90deg, #1a2a3f 25%, #243550 50%, #1a2a3f 75%);
+    background-size: 200% 100%; animation: shimmer 1.4s infinite; margin-bottom: 8px;
+  }
+  .shimmer-line.w80 { width: 80%; }
+  .shimmer-line.w60 { width: 60%; }
+  .shimmer-line.w90 { width: 90%; }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  .review-card {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: var(--radius); padding: 15px; margin-bottom: 11px;
+    cursor: pointer; transition: all 0.2s ease; position: relative;
+  }
+  .review-card:hover { border-color: var(--gold); background: rgba(201,168,76,0.05); }
+  .review-card.selected { border-color: var(--gold); background: rgba(201,168,76,0.09); }
+  .review-card.selected::after {
+    content: '✓'; position: absolute; top: 13px; right: 13px;
+    width: 21px; height: 21px; background: var(--gold); color: var(--navy);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800;
+  }
+  .review-num { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--gold); text-transform: uppercase; margin-bottom: 6px; }
+  .review-text { font-size: 13.5px; line-height: 1.75; color: var(--white); font-weight: 300; }
+  .stars { color: #f4c542; font-size: 12px; margin-top: 8px; letter-spacing: 1px; }
+  .error-box {
+    background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.3);
+    border-radius: var(--radius); padding: 20px; text-align: center; margin: 20px 0;
+  }
+  .error-box p { color: #e74c3c; font-size: 13px; margin-bottom: 12px; }
+  .retry-btn {
+    background: var(--gold-dim); border: 1px solid var(--gold);
+    color: var(--gold); padding: 10px 20px; border-radius: 8px;
+    font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif;
+  }
+  .action-card {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: var(--radius); padding: 18px; margin-bottom: 14px;
+  }
+  .action-review-text {
+    font-size: 14px; line-height: 1.75; color: var(--white); font-weight: 300;
+    background: rgba(0,0,0,0.2); border-radius: 10px; padding: 13px;
+    margin-bottom: 14px; border-left: 3px solid var(--gold);
+  }
+  .instruction-box {
+    background: rgba(46,204,113,0.07); border: 1px solid rgba(46,204,113,0.22);
+    border-radius: var(--radius); padding: 15px; margin-bottom: 14px;
+  }
+  .inst-title { font-size: 11px; font-weight: 700; color: var(--green); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+  .instruction-step { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 7px; }
+  .inst-num {
+    width: 19px; height: 19px; background: var(--green); color: #fff;
+    border-radius: 50%; font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;
+  }
+  .inst-text { font-size: 13px; color: var(--white); font-weight: 300; line-height: 1.5; }
+  .btn-primary {
+    width: 100%; padding: 15px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: var(--navy); border: none; border-radius: 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    gap: 9px; transition: all 0.2s; margin-bottom: 10px;
+  }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-secondary {
+    width: 100%; padding: 13px; background: transparent; color: var(--gold);
+    border: 1.5px solid var(--card-border); border-radius: 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    gap: 8px; transition: all 0.2s; margin-bottom: 10px;
+  }
+  .btn-secondary:hover { border-color: var(--gold); background: var(--gold-dim); }
+  .toast {
+    position: fixed; bottom: 22px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--green); color: #fff;
+    padding: 11px 22px; border-radius: 50px;
+    font-size: 14px; font-weight: 600;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 999; white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .footer-note {
+    text-align: center; font-size: 11px; color: var(--gray);
+    padding: 14px; border-top: 1px solid var(--card-border); font-weight: 300;
+  }
+  .footer-note strong { color: var(--gold); font-weight: 600; }
+  @media (max-width: 360px) { .category-grid { grid-template-columns: 1fr; } }
+</style>
 </head>
 <body>
-    <header>
-        <div class="badge" onclick="goBack('category')" style="cursor: pointer;">⭐ Pritam Lace – Google Review</div>
-        <h1>Apna Experience <br> <span class="gold-text">Share Karein</span></h1>
-        <p class="subtitle">Sirf 3 step mein apni review ready ho jaayegi</p>
-    </header>
 
-    <nav class="progress-bar">
-        <div class="step active" id="step1">
-            <div class="step-circle">1</div>
-            <span>Category</span>
-        </div>
-        <div class="divider"></div>
-        <div class="step" id="step2">
-            <div class="step-circle">2</div>
-            <span>Review</span>
-        </div>
-        <div class="divider"></div>
-        <div class="step" id="step3">
-            <div class="step-circle">3</div>
-            <span>Post Karo</span>
-        </div>
-    </nav>
+<div class="header">
+  <div class="logo-badge">⭐ Pritam Lace – Google Review</div>
+  <h1>Apna Experience<br><span>Share Karein</span></h1>
+  <p>Sirf 3 step mein apni review ready ho jaayegi</p>
+</div>
 
-    <div class="container">
-        <!-- SCREEN 1: CATEGORY SELECTION -->
-        <div id="screen-category">
-            <h2 class="screen-title">Aapne humse kya liya?</h2>
-            <p class="screen-subtitle">Jo aapke experience se match kare woh category chunein</p>
-            
-            <div class="grid-categories" id="categories-grid">
-                <!-- Cards injected via JS -->
-            </div>
+<div class="steps-bar">
+  <div class="step active" id="step1"><div class="step-num">1</div><span>Category</span></div>
+  <div class="step-divider"></div>
+  <div class="step" id="step2"><div class="step-num">2</div><span>Review</span></div>
+  <div class="step-divider"></div>
+  <div class="step" id="step3"><div class="step-num">3</div><span>Post Karo</span></div>
+</div>
 
-            <div class="loading-overlay" id="loader">
-                <div class="spinner"></div>
-                <p class="loading-text">AI review generate ho rahi hai...</p>
-            </div>
-            
-            <div id="error-msg" class="hidden" style="text-align: center; padding: 20px;">
-                <p style="color: #ff5e5e; margin-bottom: 12px;">Kuch problem aayi, dobara try karein</p>
-                <button class="btn-secondary" style="width: auto; padding: 8px 20px;" onclick="location.reload()">Retry</button>
-            </div>
-        </div>
-
-        <!-- SCREEN 2: REVIEW SELECTION -->
-        <div id="screen-review" class="hidden">
-            <button class="back-btn" onclick="goBack('category')">← Wapas Jaao</button>
-            <div class="tag-badge" id="selected-category-tag"></div>
-            
-            <h2 class="screen-title">Apni review chunein</h2>
-            <p class="screen-subtitle">Jo aapke experience se sabse zyada match kare</p>
-
-            <div class="review-list" id="reviews-list">
-                <!-- Review cards injected via JS -->
-            </div>
-        </div>
-
-        <!-- SCREEN 3: ACTION CONTENT -->
-        <div id="screen-action" class="hidden">
-            <button class="back-btn" onclick="goBack('review')">← Doosri Review Chunein</button>
-            
-            <div class="instruction-box">
-                <div class="instruction-title">📋 3 Easy Steps</div>
-                <div class="inst-row">
-                    <div class="circle-num">1</div>
-                    <div class="inst-text">"Copy Karo" button dabao — review copy ho jaayegi</div>
-                </div>
-                <div class="inst-row">
-                    <div class="circle-num">2</div>
-                    <div class="inst-text">"Google Review Karo" dabao — Google ka page khulega</div>
-                </div>
-                <div class="inst-row">
-                    <div class="circle-num">3</div>
-                    <div class="inst-text">Google page mein box mein Paste Ctrl+V karo aur Post karo ⭐</div>
-                </div>
-            </div>
-
-            <div class="final-card">
-                <span class="final-label">Aapki Review</span>
-                <div class="review-box" id="final-review-text"></div>
-                <div class="stars">★★★★★</div>
-            </div>
-
-            <button class="btn-primary" onclick="copyReview()">📋 Copy Karo</button>
-            <button class="btn-secondary" onclick="openGoogle()">🌐 Google Review Karo</button>
-            <button class="btn-secondary" onclick="copyAndOpen()">✨ Copy + Google — Ek Saath</button>
-        </div>
+<div class="screen active" id="screen-cat">
+  <p class="screen-title" style="margin-top:20px">Aapne humse kya liya?</p>
+  <p class="screen-sub">Jo aapke experience se match kare woh category chunein</p>
+  <div class="category-grid">
+    <div class="cat-card" onclick="selectCategory('Lace Variety aur Collection - GPO lace, crochet lace, jalar lace, cotton lace','🧵')">
+      <span class="cat-icon">🧵</span>
+      <div class="cat-name">Lace Variety & Collection</div>
+      <div class="cat-hint">GPO, Crochet, Jalar, Cotton</div>
     </div>
+    <div class="cat-card" onclick="selectCategory('Saree aur Pallu Lace - saree border, jalar, pallu lace','🥻')">
+      <span class="cat-icon">🥻</span>
+      <div class="cat-name">Saree & Pallu Lace</div>
+      <div class="cat-hint">Saree border, jalar, pallu</div>
+    </div>
+    <div class="cat-card" onclick="selectCategory('Kurti Dupatta aur Garment ke liye lace - stitching unit, garment manufacturing','👗')">
+      <span class="cat-icon">👗</span>
+      <div class="cat-name">Kurti, Dupatta & Garment</div>
+      <div class="cat-hint">Stitching unit, garment use</div>
+    </div>
+    <div class="cat-card" onclick="selectCategory('Bulk Supply aur Low MOQ - large orders, wholesale buying','📦')">
+      <span class="cat-icon">📦</span>
+      <div class="cat-name">Bulk Supply & Low MOQ</div>
+      <div class="cat-hint">Large orders, bulk buying</div>
+    </div>
+    <div class="cat-card" onclick="selectCategory('Custom Design aur Customize Lace Creation - special orders','✂️')">
+      <span class="cat-icon">✂️</span>
+      <div class="cat-name">Custom Design</div>
+      <div class="cat-hint">Customize creation, special order</div>
+    </div>
+    <div class="cat-card" onclick="selectCategory('Pricing aur Value for Money - competitive wholesale rates','💰')">
+      <span class="cat-icon">💰</span>
+      <div class="cat-name">Pricing & Value</div>
+      <div class="cat-hint">Competitive wholesale rate</div>
+    </div>
+    <div class="cat-card" onclick="selectCategory('Service aur Staff Guidance - helpful staff, support, guidance','🤝')">
+      <span class="cat-icon">🤝</span>
+      <div class="cat-name">Service & Guidance</div>
+      <div class="cat-hint">Staff help, support</div>
+    </div>
+    <div class="cat-card" onclick="selectCategory('Experience aur Trust - 2009 se established, 15 saal ka experience','🏅')">
+      <span class="cat-icon">🏅</span>
+      <div class="cat-name">Experience & Trust</div>
+      <div class="cat-hint">2009 se established</div>
+    </div>
+  </div>
+</div>
 
-    <footer>
-        <span class="footer-biz" onclick="goBack('category')" style="cursor: pointer;">Pritam Lace <span style="color: var(--gray); font-weight: normal;">· Surat · Est. 2009</span></span>
-        <p>Aapka review hamare business ke liye bahut important hai 🙏</p>
-    </footer>
+<div class="screen" id="screen-reviews">
+  <button class="back-btn" onclick="goBack(1)">← Wapas Jaao</button>
+  <div class="selected-cat-tag" id="selected-cat-label">Category</div>
+  <p class="screen-title">Apni review chunein</p>
+  <p class="screen-sub">Jo aapke experience se sabse zyada match kare</p>
+  <div id="reviews-list"></div>
+</div>
 
-    <div class="toast" id="toast">✓ Review copy ho gayi!</div>
+<div class="screen" id="screen-action">
+  <button class="back-btn" onclick="goBack(2)">← Doosri Review Chunein</button>
+  <div class="instruction-box">
+    <div class="inst-title">📋 3 Easy Steps</div>
+    <div class="instruction-step">
+      <div class="inst-num">1</div>
+      <div class="inst-text"><strong>"Copy Karo"</strong> button dabao — review copy ho jaayegi</div>
+    </div>
+    <div class="instruction-step">
+      <div class="inst-num">2</div>
+      <div class="inst-text"><strong>"Google Review Karo"</strong> dabao — Google ka page khulega</div>
+    </div>
+    <div class="instruction-step">
+      <div class="inst-num">3</div>
+      <div class="inst-text">Text box mein <strong>Paste (Ctrl+V)</strong> karo aur Post karo ⭐</div>
+    </div>
+  </div>
+  <div class="action-card">
+    <div class="review-num">Aapki Review</div>
+    <div class="action-review-text" id="final-review-text">—</div>
+    <div class="stars">★★★★★</div>
+  </div>
+  <button class="btn-primary" onclick="copyReview()">📋 Copy Karo</button>
+  <button class="btn-secondary" onclick="openGoogle()">🌐 Google Review Karo</button>
+  <button class="btn-secondary" onclick="copyAndOpen()">✨ Copy + Google — Ek Saath</button>
+</div>
 
-    <script type="module">
-        import { GoogleGenAI } from "@google/genai";
+<div class="footer-note">
+  <strong>Pritam Lace</strong> · Punagam, Surat · Est. 2009<br>
+  Aapka review hamare business ke liye bahut important hai 🙏
+</div>
 
-        // ===========================================
-        // CONFIG & CONSTANTS
-        // ===========================================
-        // Use process.env.GEMINI_API_KEY - AI Studio injects this automatically
-        const GEMINI_API_KEY = process.env.GEMINI_API_KEY; 
-        const GOOGLE_REVIEW_URL = "https://g.page/r/CY3oKW2AiIeiEAE/review";
+<div class="toast" id="toast">✓ Review copy ho gayi!</div>
 
-        const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+<script>
+const GOOGLE_REVIEW_URL = "https://g.page/r/CY3oKW2AiIeiEAE/review";
+let selectedReview = null;
+let currentCatName = '';
 
-        const categories = [
-            { name: "Lace Variety & Collection", icon: "🧵", hint: "GPO, Crochet, Jalar, Cotton" },
-            { name: "Saree & Pallu Lace", icon: "🥻", hint: "Saree border, jalar, pallu" },
-            { name: "Kurti, Dupatta & Garment", icon: "👗", hint: "Stitching unit, garment use" },
-            { name: "Bulk Supply & Low MOQ", icon: "📦", hint: "Large orders, bulk buying" },
-            { name: "Custom Design", icon: "✂️", hint: "Customize creation, special order" },
-            { name: "Pricing & Value", icon: "💰", hint: "Competitive wholesale rate" },
-            { name: "Service & Guidance", icon: "🤝", hint: "Staff help, support" },
-            { name: "Experience & Trust", icon: "🏅", hint: "2009 se established" }
-        ];
+function setStep(n) {
+  [1,2,3].forEach(i => {
+    const el = document.getElementById('step'+i);
+    el.className = 'step';
+    if(i < n) el.classList.add('done');
+    else if(i === n) el.classList.add('active');
+  });
+}
 
-        let selectedCategory = null;
-        let selectedReviewText = "";
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
 
-        // ===========================================
-        // INITIALIZATION
-        // ===========================================
-        function init() {
-            renderCategories();
-            
-            // Check if API key is likely missing
-            if (!GEMINI_API_KEY || GEMINI_API_KEY === "YOUR_API_KEY_HERE") {
-                console.error("Gemini API Key is missing. Please set GEMINI_API_KEY in secrets.");
-                const banner = document.querySelector('.api-banner');
-                if (banner) banner.style.background = '#e74c3c';
-            }
-        }
+function goBack(to) {
+  if(to === 1) { setStep(1); showScreen('screen-cat'); }
+  if(to === 2) { setStep(2); showScreen('screen-reviews'); }
+}
 
-        function renderCategories() {
-            const grid = document.getElementById('categories-grid');
-            if (!grid) return;
-            grid.innerHTML = '';
-            categories.forEach((cat, idx) => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <span class="card-emoji">${cat.icon}</span>
-                    <span class="card-name">${cat.name}</span>
-                    <span class="card-hint">${cat.hint}</span>
-                `;
-                card.onclick = () => selectCategory(idx);
-                grid.appendChild(card);
-            });
-        }
+async function selectCategory(catName, icon) {
+  currentCatName = catName;
+  const shortName = catName.split(' - ')[0];
+  document.getElementById('selected-cat-label').innerHTML = icon + ' ' + shortName;
+  setStep(2);
+  showScreen('screen-reviews');
+  await generateReviews(catName);
+}
 
-        // ===========================================
-        // CORE FUNCTIONS
-        // ===========================================
-        window.selectCategory = async function(idx) {
-            selectedCategory = categories[idx];
-            
-            // UI Feedback
-            document.querySelectorAll('.card').forEach((c, i) => {
-                if(i === idx) c.classList.add('active-state');
-                else c.classList.remove('active-state');
-            });
+function showLoading() {
+  document.getElementById('reviews-list').innerHTML = `
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <div class="loading-text">AI reviews generate ho rahi hain...</div>
+    </div>
+    ${[1,2,3].map(() => `
+      <div class="shimmer-card">
+        <div class="shimmer-line w60"></div>
+        <div class="shimmer-line w90"></div>
+        <div class="shimmer-line w80"></div>
+      </div>`).join('')}`;
+}
 
-            // Show Loading
-            document.getElementById('categories-grid').classList.add('hidden');
-            document.getElementById('loader').style.display = 'flex';
-            document.getElementById('error-msg').classList.add('hidden');
+async function generateReviews(catName) {
+  showLoading();
+  const prompt = `Tu Pritam Lace ke real customers ki taraf se Google reviews likh raha hai.
 
-            try {
-                const reviews = await callGeminiAPI(selectedCategory.name);
-                renderReviews(reviews);
-                showScreen('review');
-                setStep(2);
-            } catch (err) {
-                console.error("Generation failed:", err);
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('error-msg').classList.remove('hidden');
-                
-                // Show specific error if possible
-                const errorText = document.querySelector('#error-msg p');
-                if (errorText) {
-                    if (!GEMINI_API_KEY) errorText.innerText = "API Key nahi mila. Secrets check karein.";
-                    else errorText.innerText = "Generation mein error aayi. Dobara try karein.";
-                }
-            }
-        }
+Business: Pritam Lace, Punagam Surat Gujarat. Wholesale B2B lace fabric hotfix supplier. 2009 se chal raha hai. Owners Dhaval aur Bhavesh. Customers: saree manufacturers, garment units, stitching units across India.
 
-        async function callGeminiAPI(catName) {
-            const dynamicPrompt = `You are a B2B business owner in the Surat textile market writing a Google review for 'Pritam Lace'. 
+Category: ${catName}
 
-Goal: Generate 8 REALISTIC, blunt, and honest reviews for the category: "${catName}".
+Exactly 8 alag Google reviews likho. Rules:
+1. Hinglish — jaise WhatsApp pe likhte hain, natural mix of Hindi English
+2. Sirf 2-3 lines. Short.
+3. Honest aur genuine tone — na zyada hype, seedha baat
+4. Har review mein in mein se 1-2 SEO words naturally aayein: wholesale lace supplier Surat, bulk lace wholesaler Gujarat, GPO lace Surat, jalar lace wholesale, saree lace Surat, lace supplier since 2009, fancy lace Surat, cotton lace Gujarat, saree pallu lace, kurti lace wholesale, garment trimming Surat, crochet lace, low MOQ lace, custom lace Surat, trusted lace supplier
+5. Alag perspectives: koi saree manufacturer, koi garment unit wala, koi stitching unit
+6. Har review alag shuru ho
+7. 0-1 emoji max, natural jagah pe
+8. "Absolutely" "certainly" "I must say" — nahi
+9. Har call pe naya aur fresh output
 
-STRICT RULES (NO OVERRATING):
-1. TONE: No marketing hype. No "Best shop". Use realistic business talk. Sound like a saree manufacturer or boutique owner who actually buys in bulk.
-2. KEY HIGHLIGHTS: Mention real business advantages like:
-   - "Stable quality" (Maal consistent hai)
-   - "Timely delivery" (Time pe supply mil gayi)
-   - "Manageable MOQ" (Quantity ka koi pressure nahi hai)
-   - "Competitive wholesale rates" (Market rate se sahi hai)
-3. LENGTH: Strictly 2 to 3 lines per review.
-4. LANGUAGE: Natural Desi Hinglish. E.g., "Pritam Lace ka collection update hota rehta hai, stable supply ke liye best lace supplier since 2009 hai."
-5. SEO: Subtly rotate 1-2 of these keywords into each review: "wholesale lace supplier Surat", "bulk lace wholesaler Gujarat", "GPO lace supplier", "jalar lace wholesale", "saree pallu lace", "cotton lace bulk", "lace supplier since 2009", "low MOQ lace supplier".
-6. CATEGORY FOCUS: MUST relate to "${catName}".
+Sirf JSON array return karo, exactly 8 strings. Koi extra text nahi.
+["review1","review2","review3","review4","review5","review6","review7","review8"]`;
 
-OUTPUT FORMAT:
-Return ONLY a plain JSON array of 8 strings. No markdown backticks.`;
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{role:"user", content: prompt}]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.find(b => b.type==='text')?.text || '';
+    const clean = text.replace(/```json|```/g,'').trim();
+    const reviews = JSON.parse(clean);
+    if(!Array.isArray(reviews) || reviews.length === 0) throw new Error('bad response');
+    renderReviews(reviews);
+  } catch(e) {
+    document.getElementById('reviews-list').innerHTML = `
+      <div class="error-box">
+        <p>Reviews generate nahi hui. Internet check karo aur dobara try karo.</p>
+        <button class="retry-btn" onclick="generateReviews(currentCatName)">🔄 Dobara Try Karo</button>
+      </div>`;
+  }
+}
 
-            try {
-                const result = await ai.models.generateContent({
-                    model: "gemini-3-flash-preview",
-                    contents: [{ parts: [{ text: dynamicPrompt }] }],
-                    config: {
-                        temperature: 0.7 // Further lowered for consistency and groundedness
-                    }
-                });
+function renderReviews(reviews) {
+  const list = document.getElementById('reviews-list');
+  list.innerHTML = '';
+  reviews.forEach((text, i) => {
+    const div = document.createElement('div');
+    div.className = 'review-card';
+    div.innerHTML = `<div class="review-num">Review ${i+1}</div><div class="review-text">${text}</div><div class="stars">★★★★★</div>`;
+    div.onclick = () => {
+      document.querySelectorAll('.review-card').forEach(c => c.classList.remove('selected'));
+      div.classList.add('selected');
+      selectedReview = text;
+      setTimeout(() => {
+        document.getElementById('final-review-text').textContent = text;
+        setStep(3);
+        showScreen('screen-action');
+      }, 220);
+    };
+    list.appendChild(div);
+  });
+}
 
-                let text = result.text;
-                if (!text) throw new Error("Empty response from AI");
-
-                text = text.replace(/```json/g, '').replace(/```/g, '').trim();
-
-                try {
-                    const parsed = JSON.parse(text);
-                    if (Array.isArray(parsed) && parsed.length === 8) return parsed;
-                    throw new Error("Invalid array length");
-                } catch (e) {
-                    const retryResult = await ai.models.generateContent({
-                        model: "gemini-3-flash-preview",
-                        contents: [{ parts: [{ text: dynamicPrompt + "\nOutput: plain JSON array only." }] }],
-                        config: { temperature: 0.5 }
-                    });
-                    let retryText = retryResult.text;
-                    retryText = retryText.replace(/```json/g, '').replace(/```/g, '').trim();
-                    return JSON.parse(retryText);
-                }
-            } catch (error) {
-                throw error;
-            }
-        }
-
-        function renderReviews(reviews) {
-            const list = document.getElementById('reviews-list');
-            if (!list) return;
-            list.innerHTML = '';
-            
-            const tag = document.getElementById('selected-category-tag');
-            if (tag) {
-                tag.innerHTML = `
-                    <span>${selectedCategory.icon}</span>
-                    <span>${selectedCategory.name}</span>
-                `;
-            }
-
-            reviews.forEach((text, i) => {
-                const card = document.createElement('div');
-                card.className = 'review-card';
-                card.innerHTML = `
-                    <span class="review-label">REVIEW ${i + 1}</span>
-                    <p class="review-content">${text}</p>
-                    <div class="stars">★★★★★</div>
-                `;
-                card.onclick = () => selectReview(text, card);
-                list.appendChild(card);
-            });
-        }
-
-        window.selectReview = function(text, el) {
-            selectedReviewText = text;
-            el.classList.add('selected');
-            
-            setTimeout(() => {
-                document.getElementById('final-review-text').innerText = text;
-                showScreen('action');
-                setStep(3);
-            }, 250);
-        }
-
-        // ===========================================
-        // NAVIGATION & UTILS
-        // ===========================================
-        window.showScreen = function(screenId) {
-            const screens = ['category', 'review', 'action'];
-            screens.forEach(s => {
-                const el = document.getElementById(`screen-${s}`);
-                if (s === screenId) el.classList.remove('hidden');
-                else el.classList.add('hidden');
-            });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        window.goBack = function(to) {
-            if (to === 'category') {
-                document.getElementById('categories-grid').classList.remove('hidden');
-                document.getElementById('loader').style.display = 'none';
-                setStep(1);
-            }
-            if (to === 'review') {
-                setStep(2);
-            }
-            showScreen(to);
-        }
-
-        function setStep(n) {
-            for(let i=1; i<=3; i++) {
-                const el = document.getElementById(`step${i}`);
-                if (!el) continue;
-                el.classList.remove('active', 'done');
-                const circle = el.querySelector('.step-circle');
-                if (circle) circle.innerText = i;
-            }
-
-            for(let i=1; i<n; i++) {
-                const el = document.getElementById(`step${i}`);
-                if (!el) continue;
-                el.classList.add('done');
-                const circle = el.querySelector('.step-circle');
-                if (circle) circle.innerText = '✓';
-            }
-            const activeStep = document.getElementById(`step${n}`);
-            if (activeStep) activeStep.classList.add('active');
-        }
-
-        window.copyReview = function() {
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(selectedReviewText).then(() => {
-                    showToast();
-                });
-            } else {
-                const textArea = document.createElement("textarea");
-                textArea.value = selectedReviewText;
-                document.body.appendChild(textArea);
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    showToast();
-                } catch (err) {
-                    console.error('Fallback copy failed', err);
-                }
-                document.body.removeChild(textArea);
-            }
-        }
-
-        window.openGoogle = function() {
-            window.open(GOOGLE_REVIEW_URL, '_blank');
-        }
-
-        window.copyAndOpen = function() {
-            copyReview();
-            setTimeout(() => {
-                openGoogle();
-            }, 600);
-        }
-
-        function showToast() {
-            const toast = document.getElementById('toast');
-            if (!toast) return;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // Make functions global for inline onclick
-        window.locationReload = () => location.reload();
-
-        // Boot
-        init();
-    </script>
+function copyReview() {
+  if(!selectedReview) return;
+  navigator.clipboard.writeText(selectedReview).then(() => showToast('✓ Review copy ho gayi!')).catch(() => {
+    const el = document.createElement('textarea');
+    el.value = selectedReview;
+    document.body.appendChild(el); el.select();
+    document.execCommand('copy'); document.body.removeChild(el);
+    showToast('✓ Review copy ho gayi!');
+  });
+}
+function openGoogle() { window.open(GOOGLE_REVIEW_URL, '_blank'); }
+function copyAndOpen() { copyReview(); setTimeout(openGoogle, 600); }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
 </body>
 </html>
