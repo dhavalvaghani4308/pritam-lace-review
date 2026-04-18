@@ -518,10 +518,8 @@
     </style>
 </head>
 <body>
-    <div class="api-banner">API Key required: JS mein GEMINI_API_KEY variable mein apni Google AI Studio key daalo</div>
-
     <header>
-        <div class="badge">⭐ Pritam Lace – Google Review</div>
+        <div class="badge" onclick="goBack('category')" style="cursor: pointer;">⭐ Pritam Lace – Google Review</div>
         <h1>Apna Experience <br> <span class="gold-text">Share Karein</span></h1>
         <p class="subtitle">Sirf 3 step mein apni review ready ho jaayegi</p>
     </header>
@@ -610,7 +608,7 @@
     </div>
 
     <footer>
-        <span class="footer-biz">Pritam Lace <span style="color: var(--gray); font-weight: normal;">· Punagam, Surat · Est. 2009</span></span>
+        <span class="footer-biz" onclick="goBack('category')" style="cursor: pointer;">Pritam Lace <span style="color: var(--gray); font-weight: normal;">· Surat · Est. 2009</span></span>
         <p>Aapka review hamare business ke liye bahut important hai 🙏</p>
     </footer>
 
@@ -710,28 +708,31 @@
         }
 
         async function callGeminiAPI(catName) {
-            const dynamicPrompt = `You are an expert at writing realistic, subtle Google reviews for 'Pritam Lace' (Surat). 
+            const dynamicPrompt = `You are a B2B business owner in the Surat textile market writing a Google review for 'Pritam Lace'. 
 
-Goal: Generate 8 AUTHENTIC B2B reviews for the category: "${catName}".
+Goal: Generate 8 REALISTIC, blunt, and honest reviews for the category: "${catName}".
 
-CRITICAL RULES FOR REALISM (NO HYPE):
-1. NO OVER-RATED HYPE: Avoid words like "Best in the world", "Mind blowing", "Amazing". Keep it grounded and professional yet informal.
-2. B2B REALISM: Talk like a businessman (Saree maker, trader). Mention things like: "Maal sample jaisa hi nikalta hai", "Delivery time pe ho gayi", "Rate wholesale ke hisab se sahi hai", "MOQ manageable hai".
-3. LENGTH: 2 to 3 lines max. Keep it simple and direct.
-4. NATURAL HINGLISH: Use normal market talk. E.g., "Pritam Lace se bulk me maal liya tha, quality stable hai.", "Surat market me trusted wholesale lace supplier dhund rahe ho toh try kar sakte ho."
-5. SUBTLE SEO (Rotate in each review): 
-   - Naturally fit ONE of these: "wholesale lace supplier Surat", "bulk lace wholesaler Gujarat", "GPO lace supplier", "jalar lace wholesale", "saree pallu lace", "cotton lace bulk", "lace supplier since 2009", "low MOQ lace supplier".
-6. CATEGORY FOCUS: If category is "Service", mention "Staff behavior achha hai". If "Pricing", mention "Market rate se competitive hai".
+STRICT RULES (NO OVERRATING):
+1. TONE: No marketing hype. No "Best shop". Use realistic business talk. Sound like a saree manufacturer or boutique owner who actually buys in bulk.
+2. KEY HIGHLIGHTS: Mention real business advantages like:
+   - "Stable quality" (Maal consistent hai)
+   - "Timely delivery" (Time pe supply mil gayi)
+   - "Manageable MOQ" (Quantity ka koi pressure nahi hai)
+   - "Competitive wholesale rates" (Market rate se sahi hai)
+3. LENGTH: Strictly 2 to 3 lines per review.
+4. LANGUAGE: Natural Desi Hinglish. E.g., "Pritam Lace ka collection update hota rehta hai, stable supply ke liye best lace supplier since 2009 hai."
+5. SEO: Subtly rotate 1-2 of these keywords into each review: "wholesale lace supplier Surat", "bulk lace wholesaler Gujarat", "GPO lace supplier", "jalar lace wholesale", "saree pallu lace", "cotton lace bulk", "lace supplier since 2009", "low MOQ lace supplier".
+6. CATEGORY FOCUS: MUST relate to "${catName}".
 
 OUTPUT FORMAT:
-Return ONLY a valid JSON array of 8 strings. No markdown, no extra text.`;
+Return ONLY a plain JSON array of 8 strings. No markdown backticks.`;
 
             try {
                 const result = await ai.models.generateContent({
                     model: "gemini-3-flash-preview",
                     contents: [{ parts: [{ text: dynamicPrompt }] }],
                     config: {
-                        temperature: 0.8 // Lowered slightly for more grounded, consistent realism
+                        temperature: 0.7 // Further lowered for consistency and groundedness
                     }
                 });
 
